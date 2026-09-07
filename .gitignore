@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+*.sqlite3
+*.sqlite
+*.db
+
+# Research-generated outputs
+experiment_results.json
+experiment_run_output*.txt
+smoke_factory.sqlite
+factory_hmri_dashboard.html
+factory_hmri_data.csv
+
+# Legacy prototype artifacts not used by research_dashboard.py
+streamlit_app.py
+streamlit_factory_hmri.sqlite
+virtual_car_factory_hmri_simulation.py
+research_paper_virtual_car_factory_hmri.md
+research_paper_wearable_hmi_hri.md
+
+# Mandatory Security Exclusions: Secrets & OAuth Credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+credentials.json
+token.json
+client_secret*.json
+
+# Android
+android/.gradle/
+android/build/
+android/*/build/
+android/local.properties
+android/**/local.properties
+*.apk
+*.aab
+
+# PlatformIO / Firmware
+firmware/esp32-s3/.pio/
+firmware/esp32-s3/.vscode/
+*.bin
+*.elf
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Recordings & Temp
+*.wav
+*.mp3
+captures/
+temp_audio/
