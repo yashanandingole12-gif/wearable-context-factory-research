@@ -27,6 +27,7 @@ wheels/
 htmlcov/
 *.sqlite3
 *.sqlite
+*.sqlite-journal
 *.db
 
 # Research-generated outputs
