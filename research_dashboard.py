@@ -273,7 +273,23 @@ def worker_monitoring(factory: ResearchFactory):
 
 def robot_machine(factory: ResearchFactory):
     st.title("Robot & Machine")
-    robot_df = context_events(factory, 1000)
+    robot_df = read_sql("""
+        SELECT
+            ce.timestamp,
+            ce.department,
+            ce.robot_action,
+            rt.speed AS robot_speed,
+            ce.risk_score,
+            ce.context_confidence
+        FROM context_events AS ce
+        LEFT JOIN robot_telemetry AS rt
+            ON rt.run_id = ce.run_id
+            AND rt.cycle = ce.cycle
+            AND rt.department = ce.department
+        WHERE ce.run_id = ?
+        ORDER BY ce.id DESC
+        LIMIT ?
+    """, (latest_run_id(factory), 1000))
     rows = []
     for department, robot in factory.robots.items():
         machine = factory.machines[department]
