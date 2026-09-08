@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wearable Context-Sensing for Smart Manufacturing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f0f4f8;
+    }
+    @media print {
+      @page {
+        size: A1 portrait;
+        margin: 8mm;
+      }
+      body {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+      }
+      .poster {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        height: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <div class="poster max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden border border-gray-300">
+    
+    <!-- HEADER -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8">
+      <h1 class="text-4xl font-black mb-3">
+        Wearable Devices as a Context-Sensing Layer for Human-Machine Interaction in Smart Manufacturing
+      </h1>
+      <p class="text-xl mb-2">Yash Anand Ingole</p>
+      <p class="text-lg opacity-90">Department of Industrial Internet of Things, Priyadarshini College of Engineering, Nagpur, India</p>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="p-8 grid grid-cols-2 gap-8">
+
+      <!-- LEFT COLUMN -->
+      <div class="space-y-6">
+
+        <!-- PROBLEM SECTION -->
+        <section class="border-l-4 border-blue-600 pl-6">
+          <h2 class="text-2xl font-bold text-blue-900 mb-3">The Problem</h2>
+          <div class="bg-blue-50 p-4 rounded-lg text-sm leading-relaxed">
+            <p class="mb-2">Modern manufacturing integrates workers, cobots, and sensors, but there's an <strong>asymmetry gap</strong>:</p>
+            <ul class="list-disc list-inside space-y-1 ml-2">
+              <li>Machines track production state, but lack direct human context</li>
+              <li>Static safety systems (light curtains) cause inefficient halts</li>
+              <li>Worker fatigue and strain go undetected</li>
+              <li>Cobots operate at uniform speed regardless of worker state</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- SOLUTION SECTION -->
+        <section class="border-l-4 border-green-600 pl-6">
+          <h2 class="text-2xl font-bold text-green-900 mb-3">Proposed Solution</h2>
+          <div class="bg-green-50 p-4 rounded-lg text-sm">
+            <p class="font-semibold mb-2">Hierarchical wearable-sensing architecture:</p>
+            <div class="space-y-2 ml-2">
+              <div><strong>Layer 1:</strong> Multimodal wearables (IMU, ECG/PPG, temp, UWB)</div>
+              <div><strong>Layer 2:</strong> Edge gateway for data cleaning & aggregation</div>
+              <div><strong>Layer 3:</strong> Context inference engine with confidence scoring</div>
+              <div><strong>Layer 4:</strong> Advisory HMI/HRI for adaptive cobot behavior</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- KEY RESEARCH QUESTIONS -->
+        <section class="border-l-4 border-purple-600 pl-6">
+          <h2 class="text-2xl font-bold text-purple-900 mb-3">Research Questions</h2>
+          <ol class="space-y-2 text-sm bg-purple-50 p-4 rounded-lg">
+            <li><strong>RQ1:</strong> Can multimodal wearables provide real-time worker-state indicators?</li>
+            <li><strong>RQ2:</strong> Can confidence metrics prevent erratic robot behavior during packet loss?</li>
+            <li><strong>RQ3:</strong> Does sensor fusion detect hazards sooner than passive systems?</li>
+            <li><strong>RQ4:</strong> Can cobots adapt speed and ergonomics dynamically?</li>
+            <li><strong>RQ5:</strong> How do battery, dropout rates, and privacy affect adoption?</li>
+          </ol>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="space-y-6">
+
+        <!-- ARCHITECTURE DIAGRAM -->
+        <section class="border-l-4 border-indigo-600 pl-6">
+          <h2 class="text-2xl font-bold text-indigo-900 mb-3">System Architecture</h2>
+          <div class="bg-indigo-50 p-4 rounded-lg space-y-3 text-sm">
+            <div class="bg-white border-l-4 border-blue-500 p-3 rounded">
+              <div class="font-bold text-blue-900">Wearable Sensing Layer</div>
+              <div class="text-gray-700">IMU (wrist/spine), PPG/ECG, temp, UWB tags</div>
+            </div>
+            <div class="text-center text-gray-500 font-mono">↓ BLE / MQTT ↓</div>
+            <div class="bg-white border-l-4 border-green-500 p-3 rounded">
+              <div class="font-bold text-green-900">Edge Gateway</div>
+              <div class="text-gray-700">Data cleaning, timestamping, SQLite persistence</div>
+            </div>
+            <div class="text-center text-gray-500 font-mono">↓ Denoised Telemetry ↓</div>
+            <div class="bg-white border-l-4 border-purple-500 p-3 rounded">
+              <div class="font-bold text-purple-900">Context Engine</div>
+              <div class="text-gray-700">State classification + Confidence metric (C_t)</div>
+            </div>
+            <div class="text-center text-gray-500 font-mono">↓ Advisory Commands ↓</div>
+            <div class="bg-white border-l-4 border-red-500 p-3 rounded">
+              <div class="font-bold text-red-900">HMI/HRI Layer</div>
+              <div class="text-gray-700">Robot velocity derate, ergonomic pacing</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- KEY METRICS -->
+        <section class="border-l-4 border-amber-600 pl-6">
+          <h2 class="text-2xl font-bold text-amber-900 mb-3">Key Metrics</h2>
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="bg-amber-50 p-4 rounded-lg text-center border border-amber-200">
+              <div class="text-2xl font-black text-amber-900">10</div>
+              <div class="text-gray-700">Simulated Stations</div>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-lg text-center border border-blue-200">
+              <div class="text-2xl font-black text-blue-900">7</div>
+              <div class="text-gray-700">Ablation Scenarios</div>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg text-center border border-green-200">
+              <div class="text-2xl font-black text-green-900">0.91</div>
+              <div class="text-gray-700">Mean Confidence</div>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg text-center border border-purple-200">
+              <div class="text-2xl font-black text-purple-900">120</div>
+              <div class="text-gray-700">Cycles/Scenario</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTRIBUTIONS -->
+        <section class="border-l-4 border-rose-600 pl-6">
+          <h2 class="text-2xl font-bold text-rose-900 mb-3">Contributions</h2>
+          <ul class="space-y-2 text-sm bg-rose-50 p-4 rounded-lg">
+            <li class="flex gap-2"><span class="text-rose-600 font-bold">✓</span> Hierarchical architecture separating advisory context from safety relays</li>
+            <li class="flex gap-2"><span class="text-rose-600 font-bold">✓</span> Virtual 10-station automotive manufacturing digital twin</li>
+            <li class="flex gap-2"><span class="text-rose-600 font-bold">✓</span> Synthetic sensor generator with parametric noise injection</li>
+            <li class="flex gap-2"><span class="text-rose-600 font-bold">✓</span> Context-confidence metric (C_t) for uncertainty quantification</li>
+            <li class="flex gap-2"><span class="text-rose-600 font-bold">✓</span> Interactive Streamlit dashboard with SQLite backend</li>
+          </ul>
+        </section>
+
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-800 text-white px-8 py-4 flex justify-between items-center text-sm">
+      <div>
+        <span class="font-semibold">Classification:</span> Industry 5.0 • Human-Centered Automation • Simulated Data Only
+      </div>
+      <div class="text-gray-300">
+        <span class="font-mono">github.com/yashanandingole12-gif/wearable-context-factory-research</span>
+      </div>
+      <div class="font-semibold text-blue-300">
+        PCE-IIOT-NAGPUR 2026
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Print optimization
+    window.addEventListener('beforeprint', () => {
+      document.body.style.padding = '0';
+    });
+  </script>
+
+</body>
+</html>
