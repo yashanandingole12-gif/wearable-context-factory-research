@@ -7,7 +7,7 @@
 
 Wearable computing is often discussed as a source of worker health or productivity data, while industrial human–robot interaction (HRI) is often discussed in terms of robot safety, task allocation, and collaborative workcell design. These streams of research overlap, but they do not automatically form a valid context-aware control system. This paper critically reviews the relationship between wearable sensing, industrial augmented reality, ergonomics, context-aware robotics, digital twins, and human-centered manufacturing. It then proposes a hierarchical architecture in which wearable measurements are treated as uncertain contextual evidence rather than direct observations of human intention or medical condition.
 
-A reproducible virtual vehicle-manufacturing testbed is provided. It models logistics, body shop, welding, painting, powertrain, battery/electrical assembly, general assembly, quality inspection, testing, and finished-vehicle dispatch. A continuous event loop generates explicitly synthetic wearable, machine, robot, production, location, and environmental signals. A confidence-aware context policy compares machine/environment-only control with motion, physiological, smart-glasses, and full multimodal conditions. The prototype persists normalized event records in SQLite and exposes a Streamlit floor-plan dashboard with cycle control, periodic analytics, SQL querying, and a smart-glasses concept view.
+A reproducible virtual vehicle-manufacturing testbed is provided. It models logistics, body shop, welding, painting, powertrain, battery/electrical assembly, general assembly, quality inspection, testing, and finished-vehicle dispatch. A continuous event loop generates explicitly synthetic wearable, machine, robot, production, and department-location signals. A confidence-aware context policy compares machine/environment-only control with motion, physiological, smart-glasses/context, and full conditions. The prototype persists normalized event records in SQLite and exposes a Streamlit floor-plan dashboard with cycle control, periodic analytics, SQL querying, and a smart-glasses concept view.
 
 The defensible research gap is narrower than the claim that wearables are absent from manufacturing. Existing work demonstrates individual pieces of the problem: wearable sensing, industrial AR, ergonomics, collaborative robotics, digital twins, or context-aware assistance. The less-established contribution is an openly reproducible, cross-layer evaluation protocol that compares the incremental value of each wearable modality under faults, uncertainty, latency, packet loss, and privacy constraints. The paper therefore proposes an evaluation agenda rather than claiming that wearable assistance necessarily improves productivity.
 
@@ -19,7 +19,7 @@ Manufacturing systems increasingly combine human operators, robots, machines, se
 
 The scientifically useful question is therefore not “Can a wearable understand a worker?” It is: **Under which conditions does multimodal wearable evidence improve a machine’s estimate of worker state or interaction context enough to justify the added cost, uncertainty, privacy exposure, and operational complexity?** This formulation avoids a common overclaim. A physiological signal can be correlated with effort in one task and confounded by heat, illness, fitness, medication, or individual baseline in another. A smart-glasses event may indicate that an instruction was displayed, not that it was understood.
 
-This paper has two linked goals. First, it reviews the technological landscape and identifies where evidence is mature, where it is experimental, and where an integration claim would be premature. Second, it specifies a reproducible virtual factory experiment in which baseline and wearable-enabled systems can be compared without pretending that synthetic evidence is field evidence.
+This paper has two linked goals. First, it reviews the technological landscape and identifies where evidence is mature, where it is experimental, and where an integration claim would be premature. Second, it specifies and executes a reproducible virtual factory experiment in which baseline and wearable-enabled systems can be compared without pretending that synthetic evidence is field evidence.
 
 ### Contributions
 
@@ -48,7 +48,7 @@ HMI describes how people exchange information with machines; HRI describes inter
 
 ### 2.4 Context-aware computing and sensor fusion
 
-Context-aware systems infer a situation from multiple observations and uncertainty. Sensor fusion may be deterministic, statistical, or learned. Fusion should preserve provenance and confidence, because a missing packet and a normal physiological value are not equivalent observations. The prototype records packet loss, device presence, scenario, and context confidence for that reason.
+Context-aware systems infer a situation from multiple observations and uncertainty. Sensor fusion may be deterministic, statistical, or learned. Fusion should preserve provenance and confidence, because a missing packet and a normal physiological value are not equivalent observations. The prototype records packet loss, device presence, scenario, and context confidence for that reason. The current prototype does not implement an extended Kalman filter, Butterworth filter, REBA scoring, or a 100-Hz transport; these remain proposed extensions rather than reported results.
 
 ### 2.5 Digital twins and human digital twins
 
@@ -263,7 +263,7 @@ flowchart LR
 
 ## 8. Synthetic Wearable Data and Event Loop
 
-Each simulated sample contains `worker_id`, ISO timestamp, location, department, task, heart rate, HRV feature, skin temperature, acceleration, activity state, posture, fatigue indicator, workload indicator, safety state, machine ID, and robot ID. The system labels every run as synthetic. Scenarios include normal operation, fatigue, safety-zone entry, machine fault, workload spike, bottleneck, worker absence, packet loss, sensor drift, and communication latency.
+Each simulated sample contains `worker_id`, ISO timestamp, location, department, task, heart rate, HRV feature, skin temperature, acceleration, activity state, posture, fatigue indicator, workload indicator, safety state, machine ID, robot ID, packet-loss state, and device-wearing state. Derived records contain ergonomic risk, safety score, context confidence, robot action, robot speed, machine state, defect flag, and production position. The system labels every run as synthetic. Scenarios include normal operation, fatigue, safety-zone entry, machine fault, workload spike, bottleneck, worker absence, packet loss, sensor drift, and communication latency.
 
 ### Figure 5. Real-time streaming pipeline
 
@@ -293,7 +293,7 @@ sequenceDiagram
 
 ### Baseline model
 
-The baseline receives machine, robot, production, and environment data. It does not use wearable-derived context for its policy. Independent safety controls remain conceptually available; the baseline is not an unsafe system.
+The baseline receives machine, robot, production, and department-state data. It does not use wearable-derived context for its policy. Independent safety controls remain conceptually available; the baseline is not an unsafe system.
 
 ### Wearable-enabled conditions
 
@@ -333,7 +333,8 @@ The baseline receives machine, robot, production, and environment data. It does 
 ### Context-maintenance cost model
 
 \[
-C*{context}=C*{sensor}+C*{communication}+C*{processing}+C*{storage}+C*{maintenance}+C*{calibration}+C*{privacy/security}+C\_{human}\n\]
+C_{context}=C_{sensor}+C_{communication}+C_{processing}+C_{storage}+C_{maintenance}+C_{calibration}+C_{privacy/security}+C_{human}
+\]
 
 The experiment should compare this cost model for machine/environment-only context and wearable-assisted context. Wearables may lower the cost of inferring some worker states while increasing device management, calibration, privacy, cybersecurity, and worker-support costs. The simulation records operational proxies, but monetary costs require a separate industrial cost study.
 
@@ -344,6 +345,35 @@ For synthetic repeated runs, report means, medians, dispersion, confidence inter
 ### Ablation study
 
 The runner executes `none`, `motion`, `physiology`, `glasses`, and `full`. The primary comparison is not only the mean score; it is the marginal change in detection, context availability, intervention rate, latency, and cost proxies under normal and failure scenarios. A modality that adds data but not useful information should not be retained solely because its dashboard looks richer.
+
+## 10.1 Executed Synthetic Results
+
+The accompanying runner was executed for 120 cycles per condition using independent seeds. These values are **synthetic simulator outputs**, not human or industrial measurements. They are reproduced from `experiment_results.json` in the repository.
+
+### Table 9. Normal-scenario ablation outputs
+
+| Condition | Cycles | Completed vehicles | Mean context confidence | Mean robot speed | Mean ergonomic risk | Alerts | Defects |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| None | 120 | 12 | 0.5800 | 1.0000 | 0.3496 | 0 | 43 |
+| Motion | 120 | 12 | 0.9800 | 1.0000 | 0.3456 | 0 | 38 |
+| Physiology | 120 | 6 | 0.9800 | 0.8123 | 0.3454 | 647 | 54 |
+| Glasses/context | 120 | 12 | 0.9800 | 1.0000 | 0.3469 | 0 | 36 |
+| Full | 120 | 5 | 0.9800 | 0.8120 | 0.3476 | 648 | 34 |
+
+The observed synthetic result does not support a claim that the full condition improves throughput: the full condition completed fewer simulated vehicles than the machine/environment-only condition in this run. It did, however, produce a different intervention profile because the current policy uses physiology-related indicators to reduce robot speed when the simulated risk threshold is exceeded. This is a policy effect, not evidence that wearable sensing is beneficial in a real factory.
+
+### Table 10. Failure-scenario outputs for the full condition
+
+| Scenario | Mean fatigue | Mean workload | Mean context confidence | Mean robot speed | Alerts | Packet-loss rate | Defects |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Fatigue | 0.0911 | 0.9016 | 0.9800 | 0.5943 | 1200 | 0.0000 | 40 |
+| Safety-zone entry | 0.0705 | 0.7174 | 0.9800 | 0.7834 | 701 | 0.0000 | 32 |
+| Machine fault | 0.0677 | 0.7174 | 0.9800 | 0.8087 | 631 | 0.0000 | 38 |
+| Packet loss | 0.0710 | 0.7173 | 0.6734 | 0.6114 | 705 | 0.3267 | 38 |
+| Sensor drift | 0.0705 | 0.7173 | 0.8300 | 0.8137 | 642 | 0.0000 | 37 |
+| Latency | 0.0673 | 0.7168 | 0.8600 | 0.8116 | 650 | 0.0000 | 36 |
+
+The failure results demonstrate that the implementation records and responds to injected synthetic conditions. They do not establish real-world detection accuracy, because the simulator's injected states are also the source of the derived policy inputs.
 
 ### Figure 6. Human and industrial digital-twin relationship
 
@@ -504,6 +534,8 @@ python -m streamlit run research_dashboard.py
 
 The random seed, scenario, mode, cycle, run ID, timestamp, source fields, packet-loss flag, and context-confidence value are stored for audit. The database is local SQLite for portability. A future MQTT or WebSocket adapter should preserve the same event schema and timestamp semantics.
 
+The executable research package is available at [github.com/yashanandingole12-gif/wearable-context-factory-research](https://github.com/yashanandingole12-gif/wearable-context-factory-research). The canonical implementation is `factory_experiment.py`; the dashboard is `research_dashboard.py`; the saved synthetic comparison is `experiment_results.json` when generated locally. The repository also includes `test_research_factory.py` for event-loop, packet-loss, and persistence checks.
+
 ## 18. Conclusion
 
 Wearables can plausibly provide additional contextual evidence to HMI/HRI systems, but the evidence does not justify treating them as direct intention detectors, medical instruments, or guaranteed productivity enhancers. The strongest research direction is a controlled, multimodal, uncertainty-aware evaluation of incremental value. The proposed testbed makes that direction executable: it compares a machine/environment baseline with modality ablations and a full condition, injects operational failures, stores provenance, and exposes both real-time and periodic views.
@@ -512,23 +544,23 @@ The central scientific contribution is therefore a research protocol and archite
 
 ## References
 
-[1] L. Lu, “Industry 4.0: A survey on technologies, applications and open research issues,” _Journal of Industrial Information Integration_, vol. 6, pp. 1–10, 2017, doi: [10.1016/j.jii.2017.04.005].
+[1] L. Lu, “Industry 4.0: A survey on technologies, applications and open research issues,” _Journal of Industrial Information Integration_, vol. 6, pp. 1–10, 2017. [DOI: https://doi.org/10.1016/j.jii.2017.04.005]
 
-[2] S. Villani, F. Pini, F. Leali, and C. Secchi, “Survey on human–robot collaboration in industrial settings: Safety, intuitive interfaces and applications,” _Mechatronics_, vol. 55, pp. 248–266, 2018, doi: [10.1016/j.mechatronics.2018.02.009].
+[2] V. Villani, F. Pini, F. Leali, and C. Secchi, “Survey on human–robot collaboration in industrial settings: Safety, intuitive interfaces and applications,” _Mechatronics_, vol. 55, pp. 248–266, 2018. [DOI: https://doi.org/10.1016/j.mechatronics.2018.02.009]
 
 [3] International Organization for Standardization, _ISO 23247-1:2021, Automation systems and integration—Digital twin framework for manufacturing—Part 1: Overview and general principles_, 2021. Available: https://www.iso.org/standard/75066.html
 
 [4] M. Breque, L. De Nul, and A. Petridis, _Industry 5.0: Towards a Sustainable, Human-Centric and Resilient European Industry_, European Commission, Directorate-General for Research and Innovation, 2021. Available: https://op.europa.eu/en/publication-detail/-/publication/468a892a-5097-11eb-b59f-01aa75ed71a1
 
-[5] National Institute of Standards and Technology, _Artificial Intelligence Risk Management Framework (AI RMF 1.0)_, NIST AI 100-1, 2023, doi: [10.6028/NIST.AI.100-1]. Available: https://www.nist.gov/itl/ai-risk-management-framework
+[5] E. Tabassi, _Artificial Intelligence Risk Management Framework (AI RMF 1.0)_, NIST AI 100-1, National Institute of Standards and Technology, 2023. [DOI: https://doi.org/10.6028/NIST.AI.100-1] [Open PDF: https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf]
 
 [6] European Parliament and Council, “Regulation (EU) 2016/679 (General Data Protection Regulation),” 2016. Available: https://eur-lex.europa.eu/eli/reg/2016/679/oj
 
 [7] Government of India, _Digital Personal Data Protection Act, 2023_, Act No. 22 of 2023. Available: https://www.meity.gov.in/
 
-[8] International Organization for Standardization and International Electrotechnical Commission, _ISO/IEC 27001:2022, Information security, cybersecurity and privacy protection—Information security management systems—Requirements_, 2022.
+[8] International Organization for Standardization and International Electrotechnical Commission, _ISO/IEC 27001:2022, Information security, cybersecurity and privacy protection—Information security management systems—Requirements_, 2022. Available: https://www.iso.org/standard/27001.html
 
-[9] International Organization for Standardization, _ISO 10218-1:2011, Robots and robotic devices—Safety requirements for industrial robots—Part 1: Robots_, 2011.
+[9] International Organization for Standardization, _ISO 10218-1:2011, Robots and robotic devices—Safety requirements for industrial robots—Part 1: Robots_, 2011. Available: https://www.iso.org/standard/51330.html
 
 ## Editorial Change Log
 

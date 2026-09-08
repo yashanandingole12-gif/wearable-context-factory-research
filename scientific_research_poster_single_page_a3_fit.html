@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wearable Devices Context-Sensing Layer Research Poster</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #ffffff;
+      background-color: #0284c7;
+      margin-right: 0.35rem;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #0f172a;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.35rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .station-node {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .station-node:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px -2px rgba(0,0,0,0.06);
+    }
+    /* Strictly enforce 1-page A3 landscape fit during printing */
+    @media print {
+      @page {
+        size: A3 landscape;
+        margin: 4mm;
+      }
+      html, body {
+        height: 100% !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 8.5pt;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .poster-container {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 4mm !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body class="p-2 md:p-3 selection:bg-sky-100 selection:text-sky-900">
+
+  <div class="max-w-[1780px] mx-auto mb-2 flex flex-wrap items-center justify-between gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-xs no-print text-xs">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        Single-Page A3 Landscape Layout
+      </span>
+      <span class="text-slate-500 hidden sm:inline text-[11px]">Designed to fit all 10 sections entirely within 1 sheet without vertical scrolling.</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button onclick="toggleFitScreen()" id="fitBtn" class="px-2.5 py-1 font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded transition flex items-center gap-1 text-[11px]">
+        <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+        Fit Full Viewport
+      </button>
+      <button onclick="toggleTelemetryModal()" class="px-2.5 py-1 font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded transition flex items-center gap-1 text-[11px]">
+        <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        Inspect Telemetry
+      </button>
+      <button onclick="window.print()" class="px-3 py-1 font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded transition flex items-center gap-1 text-[11px]">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        Print / PDF (1 Page)
+      </button>
+    </div>
+  </div>
+
+  <div id="posterRoot" class="poster-container max-w-[1780px] mx-auto bg-white border border-slate-200 rounded-xl shadow-lg p-3 md:p-3.5 flex flex-col justify-between">
+
+    <!-- COMPACT HEADER BLOCK -->
+    <header class="border-b border-slate-200 pb-2 mb-2">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
+        <div class="space-y-1 max-w-5xl">
+          <div class="flex flex-wrap items-center gap-1.5 text-[9.5px]">
+            <span class="bg-sky-50 text-sky-800 font-bold px-1.5 py-0.5 rounded border border-sky-200 uppercase">Research Prototype</span>
+            <span class="bg-amber-50 text-amber-900 font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">Synthetic & Simulated Data</span>
+            <span class="bg-slate-100 text-slate-700 font-semibold px-1.5 py-0.5 rounded border border-slate-200">Uncertainty-Aware Evaluation Framework (Non-safety-critical advisory)</span>
+          </div>
+
+          <h1 class="text-lg sm:text-xl lg:text-[23px] font-black tracking-tight text-slate-950 leading-tight">
+            Wearable Devices as a Context-Sensing Layer for Human-Machine and Human-Robot Interaction in Smart Manufacturing
+          </h1>
+
+          <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-700">
+            <span class="font-extrabold text-slate-900">Yash Anand Ingole</span>
+            <span class="text-slate-300">•</span>
+            <span class="font-medium text-slate-700">Department of Industrial Internet of Things</span>
+            <span class="text-slate-300">•</span>
+            <span class="text-slate-600">Priyadarshini College of Engineering, Nagpur, Maharashtra, India</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-start lg:items-end gap-1 shrink-0 text-right">
+          <div class="flex flex-wrap justify-start lg:justify-end gap-1 max-w-sm">
+            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-100 text-slate-700 rounded border border-slate-200">Industry 5.0</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-100 text-slate-700 rounded border border-slate-200">Wearables</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-100 text-slate-700 rounded border border-slate-200">Data Science</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-100 text-slate-700 rounded border border-slate-200">HMI / HRI</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-100 text-slate-700 rounded border border-slate-200">Digital Twin</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-100 text-slate-700 rounded border border-slate-200">Ergonomics</span>
+          </div>
+          <div class="text-[9.5px] font-mono text-slate-600 flex items-center gap-1.5">
+            <span>github.com/yashanandingole</span>
+            <span class="text-slate-300">|</span>
+            <a href="https://github.com/yashanandingole12-gif/wearable-context-factory-research" class="text-sky-700 underline">wearable-context-factory-research</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 5: VIRTUAL VEHICLE FACTORY (STREAMLINED 10-STATION HORIZONTAL FLOW) -->
+    <section class="mb-2.5 bg-slate-50 border border-slate-200 rounded-lg p-2 shadow-2xs">
+      <div class="flex items-center justify-between pb-1 mb-1.5 border-b border-slate-200">
+        <div class="flex items-center gap-1.5">
+          <span class="section-badge bg-indigo-600">5</span>
+          <span class="card-title text-indigo-950 text-[10.5px]">Virtual Vehicle Factory — Simulated 10-Station Production Flow</span>
+          <span class="text-[9.5px] text-slate-500 hidden xl:inline">• Discrete-event assembly sequence instrumented with wearable operators, cobots, fixed machinery & edge gateways</span>
+        </div>
+        <!-- Compact Legend -->
+        <div class="flex items-center gap-2 text-[9px] font-medium text-slate-600">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500"></span> Worker</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-xs bg-indigo-600"></span> Cobot</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-xs bg-amber-100 border border-amber-500"></span> Collab Zone</span>
+          <span class="flex items-center gap-1 text-emerald-700 font-mono">GW Edge Node</span>
+        </div>
+      </div>
+
+      <!-- 10 Horizontal Stations Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 xl:grid-cols-10 gap-1.5">
+        <!-- Station 1 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-01</span>
+            <span class="text-emerald-700 font-mono">GW-01</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Raw Logistics</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Picking & AGV</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-sky-700 font-mono truncate">👤 IMU + HR</div>
+        </div>
+
+        <!-- Station 2 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-02</span>
+            <span class="text-emerald-700 font-mono">GW-02</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Body Shop</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Stamping & Jig</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-slate-600 font-mono truncate">⚙️ Auto Cell</div>
+        </div>
+
+        <!-- Station 3: Collaborative -->
+        <div class="station-node bg-amber-50 rounded p-1.5 border border-amber-400 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-amber-800">
+            <span>ST-03 ⚡</span>
+            <span class="text-emerald-800 font-mono">GW-03</span>
+          </div>
+          <div class="font-extrabold text-amber-950 uppercase truncate">Welding Collab</div>
+          <div class="text-amber-900 text-[9px] leading-tight truncate">Spot & Seam Align</div>
+          <div class="mt-1 pt-0.5 border-t border-amber-200 text-[8.5px] text-rose-800 font-mono truncate">👤+🤖 EMG+HR</div>
+        </div>
+
+        <!-- Station 4 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-04</span>
+            <span class="text-emerald-700 font-mono">GW-04</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Painting</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Sealing & Bake</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-slate-600 font-mono truncate">🤖 Spray Cell</div>
+        </div>
+
+        <!-- Station 5 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-05</span>
+            <span class="text-emerald-700 font-mono">GW-05</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Powertrain</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Motor Marriage</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-sky-700 font-mono truncate">👤 Torque Strain</div>
+        </div>
+
+        <!-- Station 6 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-06</span>
+            <span class="text-emerald-700 font-mono">GW-06</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Battery HV</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Pack Integration</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-sky-700 font-mono truncate">👤 Isolation Tag</div>
+        </div>
+
+        <!-- Station 7: Collaborative -->
+        <div class="station-node bg-amber-50 rounded p-1.5 border border-amber-400 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-amber-800">
+            <span>ST-07 ⚡</span>
+            <span class="text-emerald-800 font-mono">GW-07</span>
+          </div>
+          <div class="font-extrabold text-amber-950 uppercase truncate">General Assy</div>
+          <div class="text-amber-900 text-[9px] leading-tight truncate">Trim & Part Assist</div>
+          <div class="mt-1 pt-0.5 border-t border-amber-200 text-[8.5px] text-rose-800 font-mono truncate">👤+🤖 REBA Posture</div>
+        </div>
+
+        <!-- Station 8 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-08</span>
+            <span class="text-emerald-700 font-mono">GW-08</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Inspection QA</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Gap & Flush Optical</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-sky-700 font-mono truncate">👤 Gaze & Focus</div>
+        </div>
+
+        <!-- Station 9 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-09</span>
+            <span class="text-emerald-700 font-mono">GW-09</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Dynamometer</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Brake & ECU Flash</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-slate-600 font-mono truncate">👤 OBD-II Test</div>
+        </div>
+
+        <!-- Station 10 -->
+        <div class="station-node bg-white rounded p-1.5 border border-slate-200 text-[9.5px]">
+          <div class="flex justify-between items-center text-[8.5px] font-bold text-slate-400">
+            <span>ST-10</span>
+            <span class="text-emerald-700 font-mono">GW-10</span>
+          </div>
+          <div class="font-extrabold text-slate-900 uppercase truncate">Dispatch Gate</div>
+          <div class="text-slate-500 text-[9px] leading-tight truncate">Buffer Staging</div>
+          <div class="mt-1 pt-0.5 border-t border-slate-100 text-[8.5px] text-emerald-700 font-mono truncate">👤 RFID Sign-off</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-COLUMN MAIN CONTENT GRID -->
+    <main class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2.5 flex-1">
+
+      <!-- ==================== COLUMN 1: PROBLEM & QUESTIONS ==================== -->
+      <div class="space-y-2 flex flex-col justify-between">
+        
+        <!-- CARD 1: PROBLEM & CONTEXT ASYMMETRY -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge">1</span>
+            <h2 class="card-title">Problem & Context Asymmetry</h2>
+          </div>
+          <p class="text-[10px] leading-relaxed text-slate-600 mb-1.5">
+            Modern vehicle plants integrate workers, cobots, fixed stamping machinery, and environmental sensors under Industry 5.0.
+          </p>
+
+          <div class="bg-rose-50 border-l-2 border-rose-500 p-1.5 rounded-r text-[9.5px] text-rose-950 mb-1.5">
+            <strong>The Asymmetry Gap:</strong> Machines track production and equipment state, but have limited direct access to changing human context such as workload, fatigue indicators, posture, location, and safety state.
+          </div>
+
+          <div class="space-y-1 text-[9.5px] text-slate-600">
+            <div>• <strong class="text-slate-800">Static Curtains:</strong> Rigid optical fences cause abrupt stops upon line-of-sight breach.</div>
+            <div>• <strong class="text-slate-800">Cumulative Strain Blindness:</strong> Repetitive posture overload leads to MSDs undetected by machinery.</div>
+            <div>• <strong class="text-slate-800">Uncoordinated Pacing:</strong> Cobots hold uniform speeds regardless of worker fatigue.</div>
+          </div>
+        </div>
+
+        <!-- CARD 2: RESEARCH QUESTIONS -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge">2</span>
+            <h2 class="card-title">Core Research Questions</h2>
+          </div>
+          <div class="space-y-1 text-[9.5px]">
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <span class="font-bold text-sky-800">RQ1 • State Estimation:</span> Can multimodal wearable signals provide useful worker-state indicators in real time?
+            </div>
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <span class="font-bold text-sky-800">RQ2 • Uncertainty Scoring:</span> Can a confidence metric ($C_t$) prevent erratic robot motion during packet drop?
+            </div>
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <span class="font-bold text-sky-800">RQ3 • Safety Detection:</span> Does sensor fusion detect stumbles and pinch hazards sooner than laser walls?
+            </div>
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <span class="font-bold text-sky-800">RQ4 • Cobot Adaptation:</span> Can cobots dynamically derate speed and shift handoff height without line delays?
+            </div>
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <span class="font-bold text-sky-800">RQ5 • Network & Robustness:</span> How do battery life, 15-40% packet drops, and privacy affect field adoption?
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: CONNECTION TO DATA SCIENCE -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge">3</span>
+            <h2 class="card-title">Connection to Data Science</h2>
+          </div>
+          <div class="grid grid-cols-2 gap-1 text-[9.5px]">
+            <div class="p-1.5 bg-sky-50 border border-sky-100 rounded text-sky-950">
+              <div class="font-bold text-sky-900">Signal Processing</div>
+              <p class="text-[9px] text-sky-800">Synthetic signal generation, missing-packet flags, drift and device-availability checks.</p>
+            </div>
+            <div class="p-1.5 bg-indigo-50 border border-indigo-100 rounded text-indigo-950">
+              <div class="font-bold text-indigo-900">Feature Extraction</div>
+              <p class="text-[9px] text-indigo-800">Heart rate, HRV feature, skin temperature, acceleration, posture and workload indicators.</p>
+            </div>
+            <div class="p-1.5 bg-emerald-50 border border-emerald-100 rounded text-emerald-950">
+              <div class="font-bold text-emerald-900">Multi-Rate Fusion</div>
+              <p class="text-[9px] text-emerald-800">Confidence-aware fusion of wearable, robot, machine, production and department-state records.</p>
+            </div>
+            <div class="p-1.5 bg-amber-50 border border-amber-100 rounded text-amber-950">
+              <div class="font-bold text-amber-900">Anomaly Detection</div>
+              <p class="text-[9px] text-amber-800">Isolation Forest & Mahalanobis scoring for sudden falls/drops.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== COLUMN 2: ARCHITECTURE & PIPELINE ==================== -->
+      <div class="space-y-2 flex flex-col justify-between">
+        
+        <!-- CARD 4: PROPOSED HIERARCHICAL ARCHITECTURE -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs flex-1">
+          <div class="card-header">
+            <span class="section-badge bg-indigo-600">4</span>
+            <h2 class="card-title">Proposed Hierarchical Architecture</h2>
+          </div>
+          
+          <div class="space-y-1.5 text-[9.5px]">
+            <!-- Layer 1 -->
+            <div class="p-1.5 rounded bg-sky-50 border border-sky-200">
+              <div class="flex justify-between items-center font-bold text-sky-950">
+                <span>1. WEARABLE SENSING LAYER</span>
+                <span class="text-[8.5px] font-mono bg-white px-1 rounded border border-sky-200 text-sky-800">Synthetic stream</span>
+              </div>
+              <p class="text-sky-900 text-[9px]">IMU (wrist/spine), Chest PPG/ECG, Skin Temp, UWB Tag. Ultra-low power BLE 5.2.</p>
+            </div>
+
+            <div class="text-center text-[8.5px] text-slate-400 font-mono leading-none">↓ BLE / MQTT Stream Ingestion ↓</div>
+
+            <!-- Layer 2 -->
+            <div class="p-1.5 rounded bg-indigo-50 border border-indigo-200">
+              <div class="flex justify-between items-center font-bold text-indigo-950">
+                <span>2. EDGE GATEWAY & DATA CLEANING</span>
+                <span class="text-[8.5px] font-mono bg-white px-1 rounded border border-indigo-200 text-indigo-800">Edge Gateway</span>
+              </div>
+              <p class="text-indigo-900 text-[9px]">Timestamped event records, packet-loss flags, device state, SQLite persistence and queryable history.</p>
+            </div>
+
+            <div class="text-center text-[8.5px] text-slate-400 font-mono leading-none">↓ Denoised Worker Telemetry ↓</div>
+
+            <!-- Layer 3 -->
+            <div class="p-1.5 rounded bg-emerald-50 border border-emerald-200">
+              <div class="flex justify-between items-center font-bold text-emerald-950">
+                <span>3. CONTEXT & DECISION ENGINE</span>
+                <span class="text-[8.5px] font-mono bg-white px-1 rounded border border-emerald-200 text-emerald-800">Inference</span>
+              </div>
+              <p class="text-emerald-900 text-[9px]">State classification: Nominal, Fatigue Strain, Hazardous Reach.</p>
+              <!-- Math Formula -->
+              <div class="mt-1 bg-white/90 p-1 rounded border border-emerald-200 font-mono text-[9px] text-emerald-950">
+                <strong>Confidence:</strong> $C_t = \alpha(1-\text{loss}) + \beta(1-\sigma^2_{\text{IMU}}) + \gamma(\text{SNR})$
+                <div class="text-[8px] text-slate-500 font-sans">Weights: $\alpha=0.4, \beta=0.3, \gamma=0.3$. Smooth degradation under dropouts.</div>
+              </div>
+            </div>
+
+            <div class="text-center text-[8.5px] text-slate-400 font-mono leading-none">↓ Advisory Velocity Derate & Ergonomic Pacing ↓</div>
+
+            <!-- Layer 4 -->
+            <div class="p-1.5 rounded bg-slate-50 border border-slate-300">
+              <div class="flex justify-between items-center font-bold text-slate-900">
+                <span>4. HMI / HRI INTERACTION LAYER</span>
+                <span class="text-[8.5px] font-mono bg-amber-100 text-amber-900 px-1 rounded border border-amber-300">Safety Guard</span>
+              </div>
+              <p class="text-slate-700 text-[9px]">Confidence-aware robot action: continue, reduce speed, safety stop, or machine-safe-stop.</p>
+              <div class="mt-1 bg-rose-50 border border-rose-200 p-1 rounded text-[8.5px] text-rose-900 font-semibold leading-tight">
+                ⚠️ Research prototype only: wearable context does not replace safety-rated physical controls.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 5: 8-STAGE DATA PIPELINE -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge bg-indigo-600">P</span>
+            <h2 class="card-title">8-Stage Data Science Pipeline</h2>
+          </div>
+          <div class="grid grid-cols-4 gap-1 text-center text-[9px] font-bold mb-1">
+            <div class="bg-slate-100 border border-slate-200 p-1 rounded text-slate-800"><span class="text-sky-600 block text-[8px]">01</span>SENSE</div>
+            <div class="bg-slate-100 border border-slate-200 p-1 rounded text-slate-800"><span class="text-sky-600 block text-[8px]">02</span>STREAM</div>
+            <div class="bg-slate-100 border border-slate-200 p-1 rounded text-slate-800"><span class="text-sky-600 block text-[8px]">03</span>CLEAN</div>
+            <div class="bg-slate-100 border border-slate-200 p-1 rounded text-slate-800"><span class="text-sky-600 block text-[8px]">04</span>ESTIMATE</div>
+            <div class="bg-sky-50 border border-sky-200 p-1 rounded text-sky-900"><span class="text-sky-600 block text-[8px]">05</span>ANALYZE</div>
+            <div class="bg-sky-50 border border-sky-200 p-1 rounded text-sky-900"><span class="text-sky-600 block text-[8px]">06</span>DECIDE</div>
+            <div class="bg-indigo-50 border border-indigo-200 p-1 rounded text-indigo-900"><span class="text-indigo-600 block text-[8px]">07</span>ACT</div>
+            <div class="bg-emerald-50 border border-emerald-200 p-1 rounded text-emerald-900"><span class="text-emerald-600 block text-[8px]">08</span>RECORD</div>
+          </div>
+          <p class="text-[9px] text-slate-500 leading-tight">
+            Controlled cycle: synthetic telemetry $\rightarrow$ data-quality flags $\rightarrow$ context scoring $\rightarrow$ robot policy $\rightarrow$ SQLite research event logging.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- ==================== COLUMN 3: COMPARISON & TELEMETRY ==================== -->
+      <div class="space-y-2 flex flex-col justify-between">
+        
+        <!-- CARD 7: BASELINE VS WEARABLE COMPARISON -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge bg-emerald-600">7</span>
+            <h2 class="card-title">Baseline vs. Wearable-Enabled HMI</h2>
+          </div>
+          
+          <table class="w-full text-[9.5px] text-left border-collapse mb-1.5">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-500 text-[8.5px]">
+                <th class="py-0.5">Dimension</th>
+                <th class="py-0.5 text-slate-500">Baseline HMI</th>
+                <th class="py-0.5 text-sky-800">Wearable-Enabled</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr>
+                <td class="py-1 font-bold text-slate-900">Sensors</td>
+                <td class="text-slate-500">Optical light fences, encoders</td>
+                <td class="text-sky-900 font-semibold">IMU + HR + UWB + Encoders</td>
+              </tr>
+              <tr>
+                <td class="py-1 font-bold text-slate-900">Human Model</td>
+                <td class="text-slate-500">Static bounding box</td>
+                <td class="text-sky-900 font-semibold">Real-time fatigue & REBA strain</td>
+              </tr>
+              <tr>
+                <td class="py-1 font-bold text-slate-900">Safety Action</td>
+                <td class="text-slate-500">Abrupt emergency trips</td>
+                <td class="text-sky-900 font-semibold">Smooth velocity derating (30-60%)</td>
+              </tr>
+              <tr>
+                <td class="py-1 font-bold text-slate-900">Ergonomics</td>
+                <td class="text-slate-500">Post-shift self report</td>
+                <td class="text-sky-900 font-semibold">Continuous posture & strain feed</td>
+              </tr>
+              <tr>
+                <td class="py-1 font-bold text-slate-900">Uncertainty</td>
+                <td class="text-slate-500">Ignored / Binary</td>
+                <td class="text-sky-900 font-semibold">Confidence metric ($C_t$) fallback</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Benchmarks -->
+          <div class="grid grid-cols-3 gap-1 text-center bg-slate-50 p-1.5 rounded border border-slate-200 text-[9px]">
+            <div class="p-1 bg-white rounded border border-slate-100">
+              <div class="text-slate-500 text-[8px]">False Trip Rate</div>
+              <div class="text-[11px] font-black text-emerald-600">0 vs 648*</div>
+            </div>
+            <div class="p-1 bg-white rounded border border-slate-100">
+              <div class="text-slate-500 text-[8px]">Cycle Time Drift</div>
+              <div class="text-[11px] font-black text-sky-600">12 vs 5*</div>
+            </div>
+            <div class="p-1 bg-white rounded border border-slate-100">
+              <div class="text-slate-500 text-[8px]">Mean Risk Indicator</div>
+              <div class="text-[11px] font-black text-indigo-600">0.3496 vs 0.3476*</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 6: SYNTHETIC TELEMETRY & FRAME -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge bg-emerald-600">6</span>
+            <h2 class="card-title">Synthetic Telemetry Stream</h2>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded mb-1.5">
+            <table class="w-full text-[8.5px] font-mono text-left">
+              <thead class="bg-slate-100 text-slate-700">
+                <tr>
+                  <th class="p-0.5">Stn</th>
+                  <th class="p-0.5">Wkr</th>
+                  <th class="p-0.5">HR</th>
+                  <th class="p-0.5">Risk</th>
+                  <th class="p-0.5">$C_t$</th>
+                  <th class="p-0.5">Cobot Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white">
+                <tr>
+                  <td class="p-0.5 font-semibold">03-Weld</td>
+                  <td class="p-0.5 text-slate-500">W-04</td>
+                  <td class="p-0.5 text-rose-600 font-bold">104</td>
+                  <td class="p-0.5 text-amber-600 font-bold">0.71</td>
+                  <td class="p-0.5 text-emerald-600">0.94</td>
+                  <td class="p-0.5"><span class="bg-amber-50 text-amber-800 px-1 rounded">Derate 30%</span></td>
+                </tr>
+                <tr>
+                  <td class="p-0.5 font-semibold">05-Power</td>
+                  <td class="p-0.5 text-slate-500">W-07</td>
+                  <td class="p-0.5">82</td>
+                  <td class="p-0.5 text-emerald-600">0.35</td>
+                  <td class="p-0.5 text-emerald-600">0.98</td>
+                  <td class="p-0.5"><span class="bg-sky-50 text-sky-800 px-1 rounded">Nominal</span></td>
+                </tr>
+                <tr>
+                  <td class="p-0.5 font-semibold">07-GenAssy</td>
+                  <td class="p-0.5 text-slate-500">W-11</td>
+                  <td class="p-0.5 text-amber-600">96</td>
+                  <td class="p-0.5 text-rose-600 font-bold">0.82</td>
+                  <td class="p-0.5 text-amber-600">0.82</td>
+                  <td class="p-0.5"><span class="bg-indigo-50 text-indigo-800 px-1 rounded">Height Adj</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-slate-900 text-slate-200 p-1.5 rounded font-mono text-[8.5px] leading-tight overflow-x-auto">
+            <span class="text-sky-300">{"ts":</span>"14:23:01.402", <span class="text-sky-300">"stn":</span>"Welding-03", <span class="text-sky-300">"wkr":</span>"W-04", <span class="text-sky-300">"hr":</span>104.2,<br>
+            &nbsp;<span class="text-sky-300">"posture_risk":</span>0.71, <span class="text-sky-300">"workload":</span>0.82, <span class="text-sky-300">"conf":</span>0.98, <span class="text-sky-300">"action":</span>"reduce-speed"}
+          </div>
+        </div>
+
+        <!-- CARD 8: EXPERIMENTAL SCENARIOS -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge bg-emerald-600">8</span>
+            <h2 class="card-title">Experimental Scenarios (Ablation)</h2>
+          </div>
+          <div class="space-y-1 text-[9.5px]">
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <strong class="text-sky-800">S1 • Nominal Baseline Shift:</strong> Fully rested workers, 0% packet degradation, nominal full-speed cycles.
+            </div>
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <strong class="text-amber-800">S2 • Fatigue Progression:</strong> Simulated 4h shift (+22 bpm HR, posture fatigue); cobots proactively derate speed.
+            </div>
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded">
+              <strong class="text-rose-800">S3 • Network Loss & Drift:</strong> 25-40% packet drops; $C_t$ degrades smoothly to fallback deterministic defaults.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== COLUMN 4: PLATFORM & CONTRIBUTIONS ==================== -->
+      <div class="space-y-2 flex flex-col justify-between">
+        
+        <!-- CARD 9: REAL-TIME DASHBOARD PLATFORM -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs">
+          <div class="card-header">
+            <span class="section-badge bg-sky-600">9</span>
+            <h2 class="card-title">Real-Time Dashboard Platform</h2>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-1 text-center mb-1.5">
+            <div class="p-1.5 bg-slate-50 border border-slate-200 rounded">
+              <div class="text-[8px] text-slate-500 font-bold uppercase">Active Stations</div>
+              <div class="text-sm font-black text-slate-900">10 / 10</div>
+              <div class="text-[8px] text-emerald-600">100% In-Sync</div>
+            </div>
+            <div class="p-1.5 bg-slate-50 border border-slate-200 rounded">
+              <div class="text-[8px] text-slate-500 font-bold uppercase">Confidence ($C_t$)</div>
+              <div class="text-sm font-black text-emerald-600">0.91 avg</div>
+              <div class="text-[8px] text-slate-500">&gt;0.75 Floor</div>
+            </div>
+            <div class="p-1.5 bg-slate-50 border border-slate-200 rounded">
+              <div class="text-[8px] text-slate-500 font-bold uppercase">Nuisance Halts</div>
+              <div class="text-sm font-black text-sky-600">Synthetic</div>
+              <div class="text-[8px] text-slate-500">not field benchmark</div>
+            </div>
+            <div class="p-1.5 bg-slate-50 border border-slate-200 rounded">
+              <div class="text-[8px] text-slate-500 font-bold uppercase">Edge Telemetry</div>
+              <div class="text-sm font-black text-indigo-600">SQLite</div>
+              <div class="text-[8px] text-slate-500">queryable event store</div>
+            </div>
+          </div>
+
+          <div class="p-1.5 bg-slate-50 rounded border border-slate-200 text-[8.5px] text-slate-600 space-y-0.5 font-mono">
+            <div class="flex justify-between"><span>Active Workers:</span><span class="font-bold text-slate-900">14 Operators</span></div>
+            <div class="flex justify-between"><span>DB Backend:</span><span class="font-bold text-slate-900">SQLite Ring-Buffer</span></div>
+          </div>
+        </div>
+
+        <!-- CARD 10: RESEARCH CONTRIBUTIONS -->
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs flex-1">
+          <div class="card-header">
+            <span class="section-badge bg-emerald-600">10</span>
+            <h2 class="card-title text-emerald-950">Core Research Contributions</h2>
+          </div>
+          <div class="space-y-1 text-[9.5px] text-slate-700">
+            <div><strong class="text-emerald-800">1. Hierarchical Architecture:</strong> Multi-tiered separation of advisory human context from hardwired ISO 10218 safety relays.</div>
+            <div><strong class="text-emerald-800">2. Virtual Factory Twin:</strong> Complete 10-station automotive body, powertrain, and assembly discrete simulation.</div>
+            <div><strong class="text-emerald-800">3. Synthetic Sensor Generator:</strong> Synchronized IMU, PPG, and cobot telemetry with parametric noise injection.</div>
+            <div><strong class="text-emerald-800">4. Context-Confidence Metric ($C_t$):</strong> Continuous uncertainty quantification preventing erratic cobot behavior.</div>
+            <div><strong class="text-emerald-800">5. Baseline & Ablation Benchmark:</strong> Executed synthetic comparison of none, motion, physiology, glasses and full conditions.</div>
+            <div><strong class="text-emerald-800">6. Interactive Dashboard Platform:</strong> Reproducible Python & Streamlit interface with edge SQLite persistence.</div>
+          </div>
+        </div>
+
+        <!-- AUTHOR CARD -->
+        <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] space-y-0.5">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-slate-900 text-[10px]">Lead Investigator: Yash Anand Ingole</span>
+            <span class="font-mono text-slate-500 text-[8.5px]">PCE-IIoT 2026</span>
+          </div>
+          <p class="text-slate-600 text-[8.5px]">Department of Industrial Internet of Things • Priyadarshini College of Engineering, Nagpur, India</p>
+          <div class="text-[8.5px] text-slate-500 pt-0.5 border-t border-slate-200 flex justify-between">
+            <span>Repository: <span class="font-mono font-semibold text-slate-700">github.com/yashanandingole</span></span>
+            <span class="font-bold text-sky-700">A3 LANDSCAPE</span>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- SLIM FOOTER BAR -->
+    <footer class="mt-2 pt-1.5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[9px] text-slate-500 gap-1">
+      <div class="flex items-center gap-1.5">
+        <span class="font-bold text-slate-700">Classification:</span>
+        <span class="bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200 text-slate-700">Industry 5.0 • Human-Centered Automation</span>
+        <span>•</span>
+        <span>Simulated Manufacturing Digital Twin Prototype</span>
+      </div>
+      <div class="font-mono text-[8.5px] text-slate-400">
+        PCE-IIOT-NAGPUR • SMART-MFG-HMI-2026 • 1-PAGE OPTIMIZED
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- TELEMETRY INSPECT MODAL -->
+  <div id="telemetryModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3">
+    <div class="bg-white rounded-xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden text-xs">
+      <div class="px-4 py-2.5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-slate-900 text-xs">Live Telemetry Stream Inspector</h3>
+        <button onclick="toggleTelemetryModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">×</button>
+      </div>
+      <div class="p-4 space-y-3">
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="p-2 bg-sky-50 rounded border border-sky-100">
+            <div class="text-[9px] text-sky-700 font-bold uppercase">Heart Rate</div>
+            <div id="modalHR" class="text-lg font-black text-sky-950">86 bpm</div>
+          </div>
+          <div class="p-2 bg-indigo-50 rounded border border-indigo-100">
+            <div class="text-[9px] text-indigo-700 font-bold uppercase">REBA Strain</div>
+            <div id="modalREBA" class="text-lg font-black text-indigo-950">6.2</div>
+          </div>
+          <div class="p-2 bg-emerald-50 rounded border border-emerald-100">
+            <div class="text-[9px] text-emerald-700 font-bold uppercase">Confidence $C_t$</div>
+            <div id="modalConf" class="text-lg font-black text-emerald-950">0.94</div>
+          </div>
+        </div>
+        <div class="bg-slate-900 text-emerald-400 p-2.5 rounded font-mono text-[10px] space-y-0.5">
+          <div class="text-slate-400 text-[9px]">// Real-Time Buffer:</div>
+          <div id="streamLog" class="space-y-0.5">
+            <div>[14:23:04.102] GW-03: Welding-03 -> W-04: HR 102 bpm, REBA 6.2, C_t 0.94 -> Paced</div>
+            <div>[14:23:04.215] GW-07: GenAssy-07 -> W-11: HR 94 bpm, REBA 7.8, C_t 0.89 -> Height-Adj</div>
+            <div>[14:23:04.330] GW-01: Logistics-01 -> W-01: HR 78 bpm, REBA 2.1, C_t 0.98 -> Nominal</div>
+          </div>
+        </div>
+      </div>
+      <div class="px-4 py-2 border-t border-slate-200 bg-slate-50 flex justify-end">
+        <button onclick="toggleTelemetryModal()" class="px-3 py-1 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-100">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleTelemetryModal() {
+      document.getElementById('telemetryModal').classList.toggle('hidden');
+    }
+
+    let isFit = false;
+    function toggleFitScreen() {
+      const root = document.getElementById('posterRoot');
+      const btn = document.getElementById('fitBtn');
+      isFit = !isFit;
+      if (isFit) {
+        root.style.maxHeight = '92vh';
+        root.style.overflow = 'hidden';
+        btn.classList.add('bg-sky-100', 'text-sky-800', 'border-sky-300');
+      } else {
+        root.style.maxHeight = 'none';
+        root.style.overflow = 'visible';
+        btn.classList.remove('bg-sky-100', 'text-sky-800', 'border-sky-300');
+      }
+    }
+
+    // Dynamic streaming simulation in modal
+    setInterval(() => {
+      const hrEl = document.getElementById('modalHR');
+      const rebaEl = document.getElementById('modalREBA');
+      const confEl = document.getElementById('modalConf');
+      const logEl = document.getElementById('streamLog');
+
+      if (hrEl && !document.getElementById('telemetryModal').classList.contains('hidden')) {
+        const randomHR = Math.floor(78 + Math.random() * 26);
+        const randomREBA = (4.0 + Math.random() * 3.5).toFixed(1);
+        const randomConf = (0.88 + Math.random() * 0.10).toFixed(2);
+
+        hrEl.innerText = `${randomHR} bpm`;
+        rebaEl.innerText = randomREBA;
+        confEl.innerText = randomConf;
+
+        const time = new Date().toTimeString().split(' ')[0] + '.' + Math.floor(Math.random() * 900 + 100);
+        const stations = ['Welding-03', 'GenAssy-07', 'Powertrain-05', 'Logistics-01', 'Quality-08'];
+        const st = stations[Math.floor(Math.random() * stations.length)];
+        const newEntry = document.createElement('div');
+        newEntry.innerText = `[${time}] ${st} -> HR ${randomHR} bpm, REBA ${randomREBA}, C_t ${randomConf} -> State: OK`;
+
+        if (logEl.children.length > 4) {
+          logEl.removeChild(logEl.children[0]);
+        }
+        logEl.appendChild(newEntry);
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
